@@ -3,15 +3,15 @@
   "private": false,
   "version": "0.1.0",
   "description": "Dataparty cli",
-  "main": "src/index.js",
-  "bin": {
-    "dpc": "./src/index.js"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "author": "RosHub Inc. <code@roshub.io>",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/datapartyjs/dpc.git"
+  },
+  "bin": {
+    "dpc": "./src/dpc.js"
+  },
   "files": [
     "src"
   ],
