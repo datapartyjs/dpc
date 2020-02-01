@@ -13,6 +13,7 @@ const commandTree = new CommandTree({usage: 'dataparty-cli <global-options> [com
 commandTree.addCommand(require('./project/project-init'))
 commandTree.addCommand(require('./project/project-show'))
 commandTree.addCommand(require('./developer/developer-add'))
+commandTree.addCommand(require('./team/team-add'))
 
 
 async function main(){

@@ -91,6 +91,23 @@ class DpcProject {
     }
   }
 
+  async setDeveloper(dev){
+    const oldDeveloper = this.getByName('developers', {
+      name: dev.name
+    }) || {}
+
+    debug('oldDeveloper', oldDeveloper)
+
+    const developer = {
+      name: dev.name,
+      email: uniqueArray([].concat(dev.email, oldDeveloper.email)),
+      github: uniqueArray([].concat(dev.github, oldDeveloper.github)),
+      discord: uniqueArray([].concat(dev.discord, oldDeveloper.discord)),
+      keygrip: uniqueArray([].concat(dev.keygrip, oldDeveloper.keygrip)),
+    }
+
+    this.setByName('developers', developer)
+  }
 }
 
 module.exports = DpcProject
