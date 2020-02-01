@@ -1,7 +1,7 @@
 {
   "name": "@dataparty/dpc",
   "private": false,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Dataparty cli",
   "author": "RosHub Inc. <code@roshub.io>",
   "license": "Apache-2.0",
@@ -17,8 +17,11 @@
   ],
   "dependencies": {
     "@dataparty/dpc-model": "^0.1.2",
+    "@hapi/hoek": "^9.0.2",
     "command-tree": "^1.0.6",
     "debug": "^4.1.1",
-    "gpgfs": "^0.5.1"
+    "deep-set": "^1.0.1",
+    "gpgfs": "^0.5.1",
+    "jsonpath-plus": "^3.0.0"
   }
 }

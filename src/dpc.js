@@ -11,6 +11,7 @@ const Validator = require('./utils/validator')
 const commandTree = new CommandTree({usage: 'dataparty-cli <global-options> [command] <command-options>'})
 
 commandTree.addCommand(require('./project/project-init'))
+commandTree.addCommand(require('./developer/developer-add'))
 
 
 async function main(){
