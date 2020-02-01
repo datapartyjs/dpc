@@ -42,11 +42,11 @@ class ProjectInit extends CmdTree.Command {
     debug('context -', this.context)
     
     if (parsed.h) {
-      throw new CmdTree.HelpRequest('help request')
+      throw new CmdTree.Error.HelpRequest('help request')
     }
 
     if (!parsed.name){
-      throw new CmdTree.UsageError('no name provided')
+      throw new CmdTree.Error.UsageError('no name provided')
     }
 
     const bucket = await this.context.gpgfs.bucket('dpc')
