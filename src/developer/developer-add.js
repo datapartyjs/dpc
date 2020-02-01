@@ -2,16 +2,8 @@
 const debug = require('debug')('dpc.developer-add')
 const CmdTree = require('command-tree')
 const Project = require('../utils/dpc-project')
-
-const uniqueArray = (arr)=>{
-  return arr.filter((v, i, a) => {
-    if( v !== undefined && a.indexOf(v) === i){
-      return true
-    }
-
-    return false
-  })
-}
+const Utils = require('../utils/utils')
+const uniqueArray = Utils.uniqueArray
 
 const DEFINITION = {
   h: {
@@ -81,22 +73,14 @@ class DeveloperAdd extends CmdTree.Command {
     const project = new Project(await bucket.file('dataparty.json'))
     
     await project.open()
-  
-    const oldDeveloper = project.getByName('developers', {
-      name: parsed.email[0]
-    }) || {}
 
-    debug('oldDeveloper', oldDeveloper)
-
-    const developer = {
+    await project.setDeveloper({
       name: parsed.email[0],
-      email: uniqueArray([].concat(parsed.email, oldDeveloper.email)),
-      github: uniqueArray([].concat(parsed.github, oldDeveloper.github)),
-      discord: uniqueArray([].concat(parsed.discord, oldDeveloper.discord)),
-      keygrip: uniqueArray([].concat(parsed.keygrip, oldDeveloper.keygrip)),
-    }
-
-    project.setByName('developers', developer)
+      email: parsed.email,
+      github: parsed.github,
+      discord: parsed.discord,
+      keygrip: parsed.keygrip
+    })
 
     await project.save()
     
