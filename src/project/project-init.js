@@ -1,7 +1,10 @@
  
-const debug = require('debug')
-const CmdTree = require('command-tree')
 
+const CmdTree = require('command-tree')
+const Hoek = require('@hapi/hoek')
+const debug = require('debug')('dpc.project-init')
+
+const Project = require('../utils/dpc-project')
 
 const DEFINITION = {
   h: {
@@ -39,24 +42,34 @@ class ProjectInit extends CmdTree.Command {
     debug('context -', this.context)
     
     if (parsed.h) {
-      throw new CommandTree.HelpRequest('help request')
+      throw new CmdTree.HelpRequest('help request')
     }
 
     if (!parsed.name){
-      throw new CommandTree.UsageError('no name provided')
+      throw new CmdTree.UsageError('no name provided')
     }
 
-    const bucket = await this.gpgfs.bucket('dpc'+parsed.name)
+    const bucket = await this.context.gpgfs.bucket('dpc')
     
-    if(!await bucket.exists()){ await bucker.create() }
+    if(!await bucket.exists()){ await bucket.create() }
     
-    const datapartyFile = await bucket.file('dataparty.json')
+    const project = new Project(await bucket.file('dataparty.json'))
     
-    if(!await datapartyFile.exists()){
-      
+    project.name = parsed.name
+    project.owners = await this.context.gpgfs.keychain.whoami()
+    
+    const secretKeys = await this.context.gpgfs.keychain.listSecretKeys()
+    const developer = {
+      name: project.owners[0],
+      email: project.owners,
+      keygrip: [Hoek.reach(secretKeys, '0.fpr.0.user_id')]
     }
+
+    project.setByName('developers', developer)
+
+    await project.init()
     
-    return null
+    return project.data
   }
 }
 
