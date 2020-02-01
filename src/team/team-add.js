@@ -46,16 +46,6 @@ class TeamAdd extends CmdTree.Command {
       definition: DEFINITION
     }
   }
-
-  async developersExist(project, list, devs){
-    for(let dev of devs){
-      let d = project.getByName(list, {name: dev})
-
-      if(!d){
-        throw new Error(`User [ ${dev} ] doesn\'t exist in list[ ${list} ]`)
-      }
-    }
-  }
   
   async run({parsed}){
     debug('context -', this.context)
@@ -75,22 +65,13 @@ class TeamAdd extends CmdTree.Command {
     const project = new Project(await bucket.file('dataparty.json'))
     await project.open()
   
-    const oldTeam = project.getByName('teams', {
-      name: parsed.name
-    }) || {}
-
-    debug('oldTeam', oldTeam)
-
-    const team = {
+    await project.setTeam({
       name: parsed.name,
-      owner: uniqueArray([].concat(parsed.owner, oldTeam.owner)),
-      members: uniqueArray([].concat(parsed.member, oldTeam.members))
-    }
+      owner: parsed.owner,
+      members: parsed.member
+    })
 
-    await this.developersExist(project, 'developers', team.owner)
-    await this.developersExist(project, 'developers', team.members)
-
-    project.setByName('teams', team)
+    await project.save()
     
     return project.data
   }

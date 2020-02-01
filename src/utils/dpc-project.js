@@ -2,8 +2,10 @@ const debug = require('debug')('dpc.DpcProject')
 const deepSet = require('deep-set')
 const {JSONPath} = require('jsonpath-plus')
 
-const Validator = require('./validator')
+const Utils = require('./utils')
+const uniqueArray = Utils.uniqueArray
 
+const Validator = require('./validator')
 const validator = new Validator()
 
 const jsonPointerToPath = (path)=>{
@@ -91,6 +93,16 @@ class DpcProject {
     }
   }
 
+  async developersExist(list, devs){
+    for(let dev of devs){
+      let d = this.getByName(list, {name: dev})
+
+      if(!d){
+        throw new Error(`User [ ${dev} ] doesn\'t exist in list[ ${list} ]`)
+      }
+    }
+  }
+
   async setDeveloper(dev){
     const oldDeveloper = this.getByName('developers', {
       name: dev.name
@@ -107,6 +119,25 @@ class DpcProject {
     }
 
     this.setByName('developers', developer)
+  }
+
+  async setTeam(team){
+    const oldTeam = this.getByName('teams', {
+      name: team.name
+    }) || {}
+
+    debug('oldTeam', oldTeam)
+
+    const newTeam = {
+      name: team.name,
+      owner: uniqueArray([].concat(team.owner, oldTeam.owner)),
+      members: uniqueArray([].concat(team.members, oldTeam.members))
+    }
+
+    await this.developersExist('developers', newTeam.owner)
+    await this.developersExist('developers', newTeam.members)
+
+    this.setByName('teams', newTeam)
   }
 }
 

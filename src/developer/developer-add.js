@@ -2,16 +2,8 @@
 const debug = require('debug')('dpc.developer-add')
 const CmdTree = require('command-tree')
 const Project = require('../utils/dpc-project')
-
-const uniqueArray = (arr)=>{
-  return arr.filter((v, i, a) => {
-    if( v !== undefined && a.indexOf(v) === i){
-      return true
-    }
-
-    return false
-  })
-}
+const Utils = require('../utils/utils')
+const uniqueArray = Utils.uniqueArray
 
 const DEFINITION = {
   h: {
