@@ -67,11 +67,11 @@ class DeveloperAdd extends CmdTree.Command {
     debug('context -', this.context)
     
     if (parsed.h) {
-      throw new CmdTree.HelpRequest('help request')
+      throw new CmdTree.Error.HelpRequest('help request')
     }
 
     if (!parsed.email){
-      throw new CmdTree.UsageError('no name provided')
+      throw new CmdTree.Error.UsageError('no name provided')
     }
 
     const bucket = await this.context.gpgfs.bucket('dpc')
@@ -81,16 +81,16 @@ class DeveloperAdd extends CmdTree.Command {
     const project = new Project(await bucket.file('dataparty.json'))
     
     await project.open()
-
-    
   
     const oldDeveloper = project.getByName('developers', {
       name: parsed.email[0]
-    })
+    }) || {}
+
+    debug('oldDeveloper', oldDeveloper)
 
     const developer = {
       name: parsed.email[0],
-      email: uniqueArray([].concat(parsed.email, oldDeveloper.eamil)),
+      email: uniqueArray([].concat(parsed.email, oldDeveloper.email)),
       github: uniqueArray([].concat(parsed.github, oldDeveloper.github)),
       discord: uniqueArray([].concat(parsed.discord, oldDeveloper.discord)),
       keygrip: uniqueArray([].concat(parsed.keygrip, oldDeveloper.keygrip)),
