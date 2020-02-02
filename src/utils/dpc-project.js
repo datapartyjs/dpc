@@ -1,6 +1,8 @@
-const debug = require('debug')('dpc.DpcProject')
+const fs = require('fs')
 const deepSet = require('deep-set')
 const {JSONPath} = require('jsonpath-plus')
+const debug = require('debug')('dpc.DpcProject')
+
 
 const Utils = require('./utils')
 const uniqueArray = Utils.uniqueArray
@@ -140,7 +142,7 @@ class DpcProject {
     this.setByName('teams', newTeam)
   }
 
-  async setCloud(cloud){
+  async setCloud(cloud, keyPath){
     const oldCloud = this.getByName('clouds', {
       name: cloud.name
     }) || {}
@@ -157,6 +159,33 @@ class DpcProject {
 
     await this.existsByName('teams', [newCloud.team])
     await this.existsByName('services', newCloud.services)
+
+    if(newCloud.type=='gce' && keyPath){
+      debug('setCloud() - storing GCE json')
+
+      const keyText = fs.readFileSync(keyPath)
+      const keyJson = JSON.parse(keyText)
+
+      const cloudBucket = await this.file.bucket.root.bucket(`cloud-${newCloud.name}`)
+
+      if(!await cloudBucket.exists()){
+        await cloudBucket.create()
+      }
+
+      const keyFile = await cloudBucket.file('gce.json')
+
+      if(!await keyFile.exists()){ 
+        await keyFile.create(JSON.stringify(keyJson))
+      }
+      else {
+        await keyFile.save(JSON.stringify(keyJson))
+      }
+
+      newCloud.apiKeyPath = 'gce.json'
+
+      debug('setCloud() - removing original keyfile')
+      fs.unlinkSync(keyPath)
+    }
 
     this.setByName('clouds', newCloud)
   }
