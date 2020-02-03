@@ -142,6 +142,24 @@ class DpcProject {
     this.setByName('teams', newTeam)
   }
 
+  async setPackage(pkg){
+    const oldPackage = this.getByName('packages', {
+      name: pkg.name
+    }) || {}
+
+    debug('oldPackage', oldPackage)
+
+    const newPackage = {
+      name: pkg.name,
+      path: pkg.path || oldPackage.path,
+      type: pkg.type || oldPackage.type,
+      build: pkg.build || oldPackage.build,
+      artifacts: pkg.artifacts || oldPackage.artifacts
+    }
+
+    this.setByName('packages', newPackage)
+  }
+
   async setCloud(cloud, keyPath){
     const oldCloud = this.getByName('clouds', {
       name: cloud.name
@@ -149,11 +167,15 @@ class DpcProject {
 
     debug('oldCloud', oldCloud)
 
+    const apiKeyPath = (cloud.apiKeyPath && cloud.apiKeyPath.length > 1)
+      ? cloud.apiKeyPath
+      : oldCloud.apiKeyPath
+
     const newCloud = {
       name: cloud.name,
       team: cloud.team || oldCloud.team,
       type: cloud.type || oldCloud.type,
-      apiKeyPath: cloud.apiKeyPath || oldCloud.apiKeyPath,
+      apiKeyPath,
       services: uniqueArray([].concat(cloud.services, oldCloud.services))
     }
 
