@@ -14,6 +14,7 @@ commandTree.addCommand(require('./project/project-init'))
 commandTree.addCommand(require('./project/project-show'))
 commandTree.addCommand(require('./developer/developer-add'))
 commandTree.addCommand(require('./team/team-add'))
+commandTree.addCommand(require('./cloud/cloud-add'))
 
 
 async function main(){

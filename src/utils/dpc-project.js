@@ -1,6 +1,8 @@
-const debug = require('debug')('dpc.DpcProject')
+const fs = require('fs')
 const deepSet = require('deep-set')
 const {JSONPath} = require('jsonpath-plus')
+const debug = require('debug')('dpc.DpcProject')
+
 
 const Utils = require('./utils')
 const uniqueArray = Utils.uniqueArray
@@ -93,7 +95,7 @@ class DpcProject {
     }
   }
 
-  async developersExist(list, devs){
+  async existsByName(list, devs){
     for(let dev of devs){
       let d = this.getByName(list, {name: dev})
 
@@ -134,10 +136,58 @@ class DpcProject {
       members: uniqueArray([].concat(team.members, oldTeam.members))
     }
 
-    await this.developersExist('developers', newTeam.owner)
-    await this.developersExist('developers', newTeam.members)
+    await this.existsByName('developers', newTeam.owner)
+    await this.existsByName('developers', newTeam.members)
 
     this.setByName('teams', newTeam)
+  }
+
+  async setCloud(cloud, keyPath){
+    const oldCloud = this.getByName('clouds', {
+      name: cloud.name
+    }) || {}
+
+    debug('oldCloud', oldCloud)
+
+    const newCloud = {
+      name: cloud.name,
+      team: cloud.team || oldCloud.team,
+      type: cloud.type || oldCloud.type,
+      apiKeyPath: cloud.apiKeyPath || oldCloud.apiKeyPath,
+      services: uniqueArray([].concat(cloud.services, oldCloud.services))
+    }
+
+    await this.existsByName('teams', [newCloud.team])
+    await this.existsByName('services', newCloud.services)
+
+    if(newCloud.type=='gce' && keyPath){
+      debug('setCloud() - storing GCE json')
+
+      const keyText = fs.readFileSync(keyPath)
+      const keyJson = JSON.parse(keyText)
+
+      const cloudBucket = await this.file.bucket.root.bucket(`cloud-${newCloud.name}`)
+
+      if(!await cloudBucket.exists()){
+        await cloudBucket.create()
+      }
+
+      const keyFile = await cloudBucket.file('gce.json')
+
+      if(!await keyFile.exists()){ 
+        await keyFile.create(JSON.stringify(keyJson))
+      }
+      else {
+        await keyFile.save(JSON.stringify(keyJson))
+      }
+
+      newCloud.apiKeyPath = 'gce.json'
+
+      debug('setCloud() - removing original keyfile')
+      fs.unlinkSync(keyPath)
+    }
+
+    this.setByName('clouds', newCloud)
   }
 }
 
