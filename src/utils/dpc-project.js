@@ -31,11 +31,34 @@ class DpcProject {
   get owners() { return this.data.owner }
   set owners(val) { deepSet(this.data, 'owner', val) }
 
+  getByField(arrPath, field, val){
+    const path = `$..${arrPath}[?(@.${field}=="${val[field]}")]`
+    const results = JSONPath({path, json:this.data})
+
+    return results[0]
+  }
+
   getByName(arrPath, val){
     const path = `$..${arrPath}[?(@.name=="${val.name}")]`
     const results = JSONPath({path, json:this.data})
 
     return results[0]
+  }
+
+  findInSubList(list, sublist, value){
+    const query = `${list}[?(@.${sublist}.indexOf("${value}")>-1)].name`
+    const listItemNames = JSONPath({path: query, json: this.data})
+    return listItemNames
+  }
+
+  async touchServiceConfig(srv){
+    debug('touchSrv - ', srv)
+    const srvCfgPath = Path.join('srv/', srv, 'config.json')
+    const srvCfgFile = await cloudBucket.file(srvCfgPath)
+
+    if(!await srvCfgFile.exists()){
+      await cloudBucket.create('{}')
+    }
   }
 
   setByName(arrPath, val){
@@ -197,17 +220,25 @@ class DpcProject {
     await this.existsByName('teams', [newCloud.team])
     await this.existsByName('services', newCloud.services)
 
+    const cloudBucket = await this.file.bucket.root.bucket(`cloud-${newCloud.name}`)
+
+    if(!await cloudBucket.exists()){
+      debug('setCloud - creating bucket cloud-' + newCloud.name)
+      await cloudBucket.create()
+    }
+
+    if(newCloud.services && newCloud.services.length > 0){
+      await Promise.all(
+        newCloud.services.map(this.touchServiceConfig)
+      )
+    }
+    
+
     if(newCloud.type=='gce' && keyPath){
       debug('setCloud() - storing GCE json')
 
       const keyText = fs.readFileSync(keyPath)
       const keyJson = JSON.parse(keyText)
-
-      const cloudBucket = await this.file.bucket.root.bucket(`cloud-${newCloud.name}`)
-
-      if(!await cloudBucket.exists()){
-        await cloudBucket.create()
-      }
 
       const keyFile = await cloudBucket.file('gce.json')
 
@@ -226,6 +257,38 @@ class DpcProject {
 
     this.setByName('clouds', newCloud)
   }
+
+  getUserTeams(who){
+    debug('getUserTeams', who)
+    const ownedTeams = this.findInSubList('teams', 'owner', who)
+    const assignedTeams = this.findInSubList('teams', 'members', who)
+
+    debug('\t', 'ownedTeams', ownedTeams)
+    debug('\t', 'assignedTeams', assignedTeams)
+
+    const teams = uniqueArray([].concat( 
+      ownedTeams, assignedTeams
+    ))
+
+    return teams
+  }
+
+  getUserClouds(who){
+    debug('getUserClouds', who)
+    const teams = this.getUserTeams(who)
+    const clouds = uniqueArray(
+      teams.map(
+        val => { 
+          debug('\t\t', val)
+          return this.getByField('clouds', 'team',{'team': val})
+        }
+      )
+    )
+
+    return clouds
+  }
+
+
 }
 
 module.exports = DpcProject
