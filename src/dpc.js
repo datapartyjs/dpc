@@ -12,11 +12,13 @@ const commandTree = new CommandTree({usage: 'dataparty-cli <global-options> [com
 
 commandTree.addCommand(require('./project/project-init'))
 commandTree.addCommand(require('./project/project-show'))
+commandTree.addCommand(require('./project/project-mount'))
 commandTree.addCommand(require('./developer/developer-add'))
 commandTree.addCommand(require('./team/team-add'))
 commandTree.addCommand(require('./cloud/cloud-add'))
+commandTree.addCommand(require('./cloud/cloud-list'))
 commandTree.addCommand(require('./package/package-add'))
-commandTree.addCommand(require('./package/service-add'))
+commandTree.addCommand(require('./service/service-add'))
 
 
 async function main(){
@@ -39,7 +41,8 @@ async function main(){
     if(process.send){ process.send({output}) }
   }
 
-  process.exit(0)
+
+  //process.exit(0)
 }
 
 // Run main
@@ -54,6 +57,6 @@ main().catch((error) => {
       output: commandTree.getHelp()
     })
   }
-  process.exit()
+  //process.exit()
 })
 
