@@ -160,6 +160,21 @@ class DpcProject {
     this.setByName('packages', newPackage)
   }
 
+  async setService(srv){
+    const oldService = this.getByName('services', {
+      name: srv.name
+    }) || {}
+
+    debug('oldService', oldService)
+
+    const newService = {
+      name: pkg.name,
+      packages: packages.path || packages.path,
+    }
+
+    this.setByName('services', newService)
+  }
+
   async setCloud(cloud, keyPath){
     const oldCloud = this.getByName('clouds', {
       name: cloud.name
