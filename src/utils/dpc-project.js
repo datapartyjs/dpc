@@ -25,6 +25,26 @@ class DpcProject {
     }
   }
 
+  get bucket(){
+    return this.file.bucket
+  }
+
+  get gpgfs(){
+    return this.bucket.root
+  }
+
+  async getCloudBucket(cloudName){
+    const cloudBucket = await this.gpgfs.bucket(`cloud-${cloudName}`)
+
+    await this.touchCloudBucket(cloudBucket)
+
+    return cloudBucket
+  }
+
+  getDeployBucket(cloudName, serviceName){
+    throw new Error('not implemented')
+  }
+
   get name() { return this.data.name }
   set name(val) { deepSet(this.data, 'name', val) }
 
@@ -51,7 +71,14 @@ class DpcProject {
     return listItemNames
   }
 
-  async touchServiceConfig(srv){
+  async touchCloudBucket(cloudBucket){
+    if(!await cloudBucket.exists()){
+      debug('touchCloudBucket - creating bucket cloud-' + cloudBucket)
+      await cloudBucket.create()
+    }
+  }
+
+  async touchServiceConfig(cloudBucket, srv){
     debug('touchSrv - ', srv)
     const srvCfgPath = Path.join('srv/', srv, 'config.json')
     const srvCfgFile = await cloudBucket.file(srvCfgPath)
@@ -220,16 +247,13 @@ class DpcProject {
     await this.existsByName('teams', [newCloud.team])
     await this.existsByName('services', newCloud.services)
 
-    const cloudBucket = await this.file.bucket.root.bucket(`cloud-${newCloud.name}`)
-
-    if(!await cloudBucket.exists()){
-      debug('setCloud - creating bucket cloud-' + newCloud.name)
-      await cloudBucket.create()
-    }
+    const cloudBucket = await this.getCloudBucket(newCloud.name)
 
     if(newCloud.services && newCloud.services.length > 0){
       await Promise.all(
-        newCloud.services.map(this.touchServiceConfig)
+        newCloud.services.map(srv => {
+          return this.touchServiceConfig(cloudBucket, srv)
+        })
       )
     }
     
@@ -288,6 +312,11 @@ class DpcProject {
     return clouds
   }
 
+  async initCloud(cloudName){ throw new Error('not implemented') }
+  async initCloudService(cloudName, serviceName){ throw new Error('not implemented') }
+
+  async deployCloud(cloudName){ throw new Error('not implemented') }
+  async deployCloudService(cloudName, serviceName){ throw new Error('not implemented') }
 
 }
 
