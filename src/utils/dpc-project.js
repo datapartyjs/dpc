@@ -85,7 +85,7 @@ class DpcProject {
     const srvCfgFile = await cloudBucket.file(srvCfgPath)
 
     if(!await srvCfgFile.exists()){
-      await cloudBucket.create('{}')
+      await srvCfgFile.create('{}')
     }
   }
 
