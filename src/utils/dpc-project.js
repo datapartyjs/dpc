@@ -218,7 +218,7 @@ class DpcProject {
     debug('oldService', oldService)
 
     const newService = {
-      name: pkg.name,
+      name: srv.name,
       packages: packages.path || packages.path,
     }
 
