@@ -219,7 +219,7 @@ class DpcProject {
 
     const newService = {
       name: srv.name,
-      packages: packages.path || packages.path,
+      packages: srv.packages || srv.packages,
     }
 
     this.setByName('services', newService)
