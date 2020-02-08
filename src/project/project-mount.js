@@ -11,6 +11,12 @@ const DEFINITION = {
     description: 'Show help',
     alias: 'help',
     type: 'help'
+  },
+  c: {
+    description: 'Clouds to mount',
+    alias: 'cloud',
+    type: 'string',
+    multiple: true
   }
 }
 
@@ -51,7 +57,14 @@ class ProjectMount extends CmdTree.Command {
     await fuse.start()
   
     await fuse.addBucket(bucket)
-    
+
+    await Promise.all(
+      parsed.cloud.map( async (cloud) => {
+        const cloudBucket = await project.getCloudBucket(cloud)
+        await fuse.addBucket(cloudBucket)
+      })
+    )
+
     console.log('mounted')
 
     return
