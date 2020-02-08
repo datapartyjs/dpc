@@ -58,12 +58,15 @@ class ProjectMount extends CmdTree.Command {
   
     await fuse.addBucket(bucket)
 
-    await Promise.all(
-      parsed.cloud.map( async (cloud) => {
-        const cloudBucket = await project.getCloudBucket(cloud)
-        await fuse.addBucket(cloudBucket)
-      })
-    )
+    if(parsed.cloud && parsed.cloud.length > 0){
+      await Promise.all(
+        parsed.cloud.map( async (cloud) => {
+          const cloudBucket = await project.getCloudBucket(cloud)
+          await fuse.addBucket(cloudBucket)
+        })
+      )  
+    }
+    
 
     console.log('mounted')
 
