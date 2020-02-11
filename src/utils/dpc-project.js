@@ -172,6 +172,14 @@ class DpcProject {
     }
 
     this.setByName('developers', developer)
+
+    let newMeta = {
+      readers: uniqueArray([].concat(this.bucket.metadata.readers, developer.email))
+    }
+
+    debug('setDeveloper - Ensure dev is a reader', newMeta.readers)
+
+    await this.bucket.setMetadata(newMeta)
   }
 
   async setTeam(team){
@@ -279,6 +287,15 @@ class DpcProject {
       debug('setCloud() - removing original keyfile')
       fs.unlinkSync(keyPath)
     }
+
+    const cloudTeam = this.getByName('teams', {name: newCloud.team})
+
+    let newMeta = {
+      readers: uniqueArray([].concat(cloudBucket.metadata.readers, cloudTeam.members, cloudTeam.owner)),
+      writers: uniqueArray([].concat(cloudBucket.metadata.writers, cloudTeam.members, cloudTeam.owner))
+    }
+
+    await cloudBucket.setMetadata(newMeta)
 
     this.setByName('clouds', newCloud)
   }
