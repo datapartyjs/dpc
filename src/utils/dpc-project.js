@@ -288,10 +288,11 @@ class DpcProject {
       fs.unlinkSync(keyPath)
     }
 
+    const cloudTeam = this.getByName('teams', {name: newCloud.team})
 
     let newMeta = {
-      readers: uniqueArray([].concat(cloudBucket.metadata.readers, newCloud.team)),
-      writers: uniqueArray([].concat(cloudBucket.metadata.writers, newCloud.team))
+      readers: uniqueArray([].concat(cloudBucket.metadata.readers, cloudTeam.members, cloudTeam.owner)),
+      writers: uniqueArray([].concat(cloudBucket.metadata.writers, cloudTeam.members, cloudTeam.owner))
     }
 
     await cloudBucket.setMetadata(newMeta)
