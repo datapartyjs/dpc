@@ -12,7 +12,7 @@ const DEFINITION = {
   },
   n: {
     alias: 'name',
-    description: 'Cloud Name',
+    description: 'Package Name',
     require: true
   },
   p: {
@@ -28,8 +28,7 @@ const DEFINITION = {
   b: {
     type: 'string',
     alias: 'build',
-    description: 'Build command',
-    multiple: true
+    description: 'Build command'
   }
 }
 
