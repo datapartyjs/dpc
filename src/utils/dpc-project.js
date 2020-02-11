@@ -1,4 +1,5 @@
 const fs = require('fs')
+const Path = require('path')
 const deepSet = require('deep-set')
 const {JSONPath} = require('jsonpath-plus')
 const debug = require('debug')('dpc.DpcProject')
@@ -84,7 +85,7 @@ class DpcProject {
     const srvCfgFile = await cloudBucket.file(srvCfgPath)
 
     if(!await srvCfgFile.exists()){
-      await cloudBucket.create('{}')
+      await srvCfgFile.create('{}')
     }
   }
 
@@ -226,8 +227,8 @@ class DpcProject {
     debug('oldService', oldService)
 
     const newService = {
-      name: pkg.name,
-      packages: packages.path || packages.path,
+      name: srv.name,
+      packages: srv.packages || srv.packages,
     }
 
     this.setByName('services', newService)
