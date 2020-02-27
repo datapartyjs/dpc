@@ -41,8 +41,6 @@ async function main(){
     if(process.send){ process.send({output}) }
   }
 
-
-  //process.exit(0)
 }
 
 // Run main

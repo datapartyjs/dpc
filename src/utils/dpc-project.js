@@ -250,6 +250,18 @@ class DpcProject {
 
     const cloudBucket = await this.getCloudBucket(newCloud.name)
 
+    // get list of team members
+    // resolve team member name to keygrip
+    const teamDevs = this.getByName('teams', newCloud.team).members
+    const keygrips = [].concat(
+        teamDevs,
+        teamDevs.map( dev => {
+        return this.getByName('developers', dev).kegrip
+      })
+    )
+
+    await cloudBucket.addActor('writers', keygrips)
+
     if(newCloud.services && newCloud.services.length > 0){
       await Promise.all(
         newCloud.services.map(srv => {
