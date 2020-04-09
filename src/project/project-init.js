@@ -52,6 +52,8 @@ class ProjectInit extends CmdTree.Command {
     const bucket = await this.context.gpgfs.bucket('dpc')
     
     if(!await bucket.exists()){ await bucket.create() }
+
+    await bucket.open()
     
     const project = new Project(await bucket.file('dataparty.json'))
     

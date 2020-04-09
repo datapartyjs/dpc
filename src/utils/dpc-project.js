@@ -128,8 +128,9 @@ class DpcProject {
   
   async open(){
     debug('open')
-    const content = await this.file.read()
-    const obj = JSON.parse(content)
+    const content = (await this.file.read())
+    debug('read content', content.toString(), typeof content)
+    const obj = JSON.parse(content.toString())
     this.data = await validator.validate('project', obj)
   }
 
@@ -258,6 +259,28 @@ class DpcProject {
 
     const cloudBucket = await this.getCloudBucket(newCloud.name)
 
+    // get list of team members
+    // resolve team member name to keygrip
+    const cloudTeam = this.getByName('teams', {name: newCloud.team})
+    const keygrips = []
+
+    cloudTeam.owner.map( dev => {
+      const devObj = this.getByName('developers', dev)
+      devObj.kegrip.map(keygrips.push)
+    })
+    
+    cloudTeam.members.map( dev => {
+      const devObj = this.getByName('developers', dev)
+      devObj.kegrip.map(keygrips.push)
+    })
+
+    debug('setCloud - update bucket permissions')
+    await Promise.all([
+      this.bucket.addActor('readers', keygrips),
+      cloudBucket.addActor('writers', keygrips)
+    ])
+    
+
     if(newCloud.services && newCloud.services.length > 0){
       await Promise.all(
         newCloud.services.map(srv => {
@@ -288,14 +311,14 @@ class DpcProject {
       fs.unlinkSync(keyPath)
     }
 
-    const cloudTeam = this.getByName('teams', {name: newCloud.team})
+    /*const cloudTeam = this.getByName('teams', {name: newCloud.team})
 
     let newMeta = {
       readers: uniqueArray([].concat(cloudBucket.metadata.readers, cloudTeam.members, cloudTeam.owner)),
       writers: uniqueArray([].concat(cloudBucket.metadata.writers, cloudTeam.members, cloudTeam.owner))
     }
 
-    await cloudBucket.setMetadata(newMeta)
+    await cloudBucket.setMetadata(newMeta)*/
 
     this.setByName('clouds', newCloud)
   }
