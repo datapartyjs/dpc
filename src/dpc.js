@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-
+const Pkg = require('../package.json')
 const Gpgfs = require('gpgfs')
 const debug = require('debug')('dpc')
 const CommandTree = require('command-tree').CommandTree
@@ -8,7 +8,7 @@ const CommandTree = require('command-tree').CommandTree
 const Validator = require('./utils/validator')
 
 
-const commandTree = new CommandTree({usage: 'dataparty-cli <global-options> [command] <command-options>'})
+const commandTree = new CommandTree({ usage: 'dataparty-cli <global-options> [command] <command-options>\nVersion: ' + Pkg.version })
 
 commandTree.addCommand(require('./project/project-init'))
 commandTree.addCommand(require('./project/project-show'))

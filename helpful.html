@@ -1,0 +1,89 @@
+<html>
+  <body bgcolor='black' text='white'>
+
+
+<pre>
+  <h1>Usage: dataparty-cli &lt;global-options&gt; [command] &lt;command-options&gt;</h1>
+  Version: 0.4.15
+  
+  Options:                     
+  
+  <font color="#4E9A06">  -o, --file</font>        <font color="gray">Output to file</font>
+  <font color="#4E9A06">  -f, --format</font>      <font color="gray">Output format</font> <font color="gray">(humanize)</font>
+  <font color="#4E9A06">  -j, --json</font>        <font color="gray">Short hand for -f=json</font>
+  <font color="#4E9A06">  -c, --csv</font>         <font color="gray">Short hand for -f=csv</font>
+  <font color="#4E9A06">  -h, --humanize</font>    <font color="gray">Short hand for -f=humanize</font>
+  <font color="#4E9A06">  -t, --table</font>       <font color="gray">Short hand for -f=table</font>
+  
+  Commands:
+  
+    project init	Initialize secure project
+    project show	Show project definition
+    project mount	Mount project secrets you have access
+    developer add	Add developer to project
+    team add	Initialize team
+    cloud add	Initialize cloud
+    cloud list	List clouds you have access to
+    package add	Initialize source package
+    service add	Initialize service
+  
+
+  
+  <h1>Usage: dpc project init [options]</h1>
+  
+  Options:                 
+  
+  <font color="#4E9A06">  -h, --help</font>    <font color="gray">Show help</font>
+  <font color="#4E9A06">  -n, --name</font>    <font color="gray">Project Name</font> <font color="#C4A000">(required)</font>
+
+
+  <h1>Usage: dpc developer add [options]</h1>
+    
+    Options:                    
+    
+    <font color="#4E9A06">  -h, --help</font>       <font color="#555753">Show help</font>
+    <font color="#4E9A06">  -e, --email</font>      <font color="#555753">Developer email</font> <font color="#C4A000">(required)</font>
+    <font color="#4E9A06">  -k, --keygrip</font>    <font color="#555753">Developer PGP keygrip</font>
+    <font color="#4E9A06">  -d, --discord</font>    <font color="#555753">Developer discord</font>
+    <font color="#4E9A06">  -g, --github</font>     <font color="#555753">Developer github</font>
+  
+
+
+  <h1>Usage: dpc team add [options]</h1>
+  
+  Options:                   
+  
+  <font color="#4E9A06">  -h, --help</font>      <font color="gray">Show help</font>
+  <font color="#4E9A06">  -n, --name</font>      <font color="gray">Team Name</font> <font color="#C4A000">(required)</font>
+  <font color="#4E9A06">  -o, --owner</font>     <font color="gray">Team owner</font>
+  <font color="#4E9A06">  -m, --member</font>    <font color="gray">Team member</font>
+
+  
+  <h1>Usage: dpc cloud add [options]</h1>
+  
+  Options:                    
+  
+  <font color="#4E9A06">  -h, --help</font>       <font color="gray">Show help</font>
+  <font color="#4E9A06">  -n, --name</font>       <font color="gray">Cloud Name</font> <font color="#C4A000">(required)</font>
+  <font color="#4E9A06">  -g, --gce</font>        <font color="gray">GCE keyfile in JSON format</font>
+  <font color="#4E9A06">  -t, --team</font>       <font color="gray">Managing team</font>
+  <font color="#4E9A06">  -s, --service</font>    <font color="gray">Service deployed to cloud</font>
+
+  
+  <h1>Usage: dpc cloud list [options]</h1>
+  
+  Options:                 
+  
+  <font color="#4E9A06">  -h, --help</font>    <font color="gray">Show help</font>
+
+
+  <h1>Usage: dpc service add [options]</h1>
+    
+    Options:                    
+    
+    <font color="#4E9A06">  -h, --help</font>       <font color="#555753">Show help</font>
+    <font color="#4E9A06">  -n, --name</font>       <font color="#555753">Cloud Name</font> <font color="#C4A000">(required)</font>
+    <font color="#4E9A06">  -p, --package</font>    <font color="#555753">Package path</font>
+
+  </body>
+</html>
